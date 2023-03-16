@@ -13,6 +13,8 @@ cloudinary.config({
     api_secret: API_SECRET
 });
 
+
+
 router.post("/addProduct", async (req, res) => {
     try {
 
@@ -115,10 +117,6 @@ router.put("/editProduct", async (req, res) => {
 })
 
 
-// admin routing
-router.get("/", (req, res) => {
-    res.status(200).json({ message: "server fine" });
-});
 
 
 

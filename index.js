@@ -9,10 +9,9 @@ const app = express();
 
 
 // config dotenv
-
 dotenv.config({});
-
 const VideRoutes = require("./routes/productRoute")
+const chatGptRoutes = require("./routes/chatGpt")
 const corsOptions = {
     origin: true, //included origin as true
     credentials: true, //included credentials as true
@@ -28,6 +27,7 @@ app.use(fileUpload({
 
 // Routes
 app.use(VideRoutes);
+app.use(chatGptRoutes);
 
 const runDb = async () => {
     try {
