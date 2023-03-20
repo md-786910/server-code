@@ -5,7 +5,6 @@ const router = require("express").Router();
 
 // Configuration 
 
-
 const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
 });
@@ -32,12 +31,15 @@ router.post("/chat", async (req, res) => {
         const completion = await openai.createChatCompletion({
             model: "gpt-3.5-turbo",
             messages: [{ role: "user", content: para }],
+            max_tokens: 2000,
+            temperature: 1,
+            stream: false,
         });
         const resp = completion.data.choices[0].message;
         res.status(200).json({ resp: resp, success: true });
 
     } catch (error) {
-
+        res.status(404).json({ resp: "error", success: false });
     }
 });
 
