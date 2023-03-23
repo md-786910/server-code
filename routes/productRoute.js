@@ -2,6 +2,7 @@ const router = require("express").Router();
 const product = require("../model/product");
 const cloudinary = require('cloudinary').v2;
 const sharp = require('sharp');
+const cart = require("../model/cart");
 const CLOUD_NAME = process.env.CLOUD_NAME
 const API_KEY = process.env.API_KEY
 const API_SECRET = process.env.API_SECRET
@@ -17,7 +18,6 @@ cloudinary.config({
 
 router.post("/addProduct", async (req, res) => {
     try {
-
         const { productName, description, price, qty } = req.body;
         const { image } = req.files;
         const result1 = await cloudinary.uploader.upload(image.tempFilePath)
@@ -83,6 +83,45 @@ router.post("/deleteProduct", async (req, res) => {
 
     }
 })
+
+router.post("/carts", async (req, res) => {
+    try {
+        const { id } = req.body
+        const prod = await product.findById(id)
+        const cartInst = new cart({
+            productName: prod.productName,
+            description: prod.description,
+            image: prod.image,
+            price: prod.price,
+            qty: prod.qty,
+        })
+        await cartInst.save();
+        res.status(201).json({ message: "add to cart successfully!", success: true });
+    } catch (error) {
+        res.status(404).json({ message: "product error!", success: false });
+    }
+})
+
+router.get("/getCart", async (req, res) => {
+    try {
+        const prod = await cart.find({})
+        res.status(200).json({ data: prod, success: true })
+    } catch (error) {
+        res.status(404).json({ message: "product error!", success: false });
+    }
+})
+router.post("/deleteCart", async (req, res) => {
+    try {
+        const { id } = req.body
+        const prod = await cart.findByIdAndDelete({ _id: id })
+        res.status(200).json({ data: prod, success: true })
+    } catch (error) {
+        res.status(404).json({ message: "product error!", success: false });
+
+    }
+})
+
+
 
 router.put("/editProduct", async (req, res) => {
     try {

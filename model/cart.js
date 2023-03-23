@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const productSchema = new mongoose.Schema(
+const cartSchema = new mongoose.Schema(
     {
         productName: {
             type: String,
@@ -33,5 +33,5 @@ const productSchema = new mongoose.Schema(
     }
 );
 
-const product = mongoose.model("product", productSchema);
-module.exports = product;
+const cart = mongoose.model("cart", cartSchema);
+module.exports = cart;
