@@ -1,7 +1,6 @@
 const router = require("express").Router();
 const product = require("../model/product");
 const cloudinary = require('cloudinary').v2;
-const sharp = require('sharp');
 const cart = require("../model/cart");
 const CLOUD_NAME = process.env.CLOUD_NAME
 const API_KEY = process.env.API_KEY
@@ -88,14 +87,29 @@ router.post("/carts", async (req, res) => {
     try {
         const { id } = req.body
         const prod = await product.findById(id)
-        const cartInst = new cart({
-            productName: prod.productName,
-            description: prod.description,
-            image: prod.image,
-            price: prod.price,
-            qty: prod.qty,
-        })
-        await cartInst.save();
+
+        const cartFound = await cart.findOne({});
+        if (cartFound) {
+            const cartInst = new cart({
+                product_id: prod._id,
+                productName: prod.productName,
+                description: prod.description,
+                image: prod.image,
+                price: prod.price,
+                qty: prod.qty,
+            })
+            await cartInst.save();
+        } else {
+
+
+
+
+
+
+
+        }
+
+
         res.status(201).json({ message: "add to cart successfully!", success: true });
     } catch (error) {
         res.status(404).json({ message: "product error!", success: false });
@@ -110,6 +124,8 @@ router.get("/getCart", async (req, res) => {
         res.status(404).json({ message: "product error!", success: false });
     }
 })
+
+
 router.post("/deleteCart", async (req, res) => {
     try {
         const { id } = req.body
