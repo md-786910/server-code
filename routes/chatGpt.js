@@ -31,15 +31,15 @@ router.post("/chat", async (req, res) => {
         const tablefields = [
             "productName",
             "description",
-            "image",
             "price",
             "qty",
         ];
 
         const flightDataString = flightData
+
             .map(
                 (flight) =>
-                    `${flight.productName}, ${flight.description}, ${flight.image}, ${flight.price}, ${flight.qty}`
+                    `${flight.productName}, ${flight.description}, ${flight.price}, ${flight.qty}`
             )
             .join("\n");
 

@@ -87,9 +87,11 @@ router.post("/carts", async (req, res) => {
     try {
         const { id } = req.body
         const prod = await product.findById(id)
-
-        const cartFound = await cart.findOne({});
+        const cartFound = await cart.findOne({ product_id: prod._id });
         if (cartFound) {
+            const updateQty = await cart.findByIdAndUpdate(cartFound._id,
+                { qty: cartFound.qty + 1 })
+        } else {
             const cartInst = new cart({
                 product_id: prod._id,
                 productName: prod.productName,
@@ -98,18 +100,8 @@ router.post("/carts", async (req, res) => {
                 price: prod.price,
                 qty: prod.qty,
             })
-            await cartInst.save();
-        } else {
-
-
-
-
-
-
-
+            const saveCart = await cartInst.save();
         }
-
-
         res.status(201).json({ message: "add to cart successfully!", success: true });
     } catch (error) {
         res.status(404).json({ message: "product error!", success: false });
