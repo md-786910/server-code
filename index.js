@@ -9,11 +9,11 @@ const app = express();
 
 // How to Train an AI Chatbot With Custom large Knowledge Base in pdf format about NFT Using ChatGPT API using node js
 
-
 // config dotenv
 dotenv.config({});
 const productRoutes = require("./routes/productRoute")
 const chatGptRoutes = require("./routes/chatGpt")
+const quotationRoutes = require("./routes/quotationRoute")
 const corsOptions = {
     origin: true, //included origin as true
     credentials: true, //included credentials as true
@@ -30,6 +30,7 @@ app.use(fileUpload({
 // Routes
 app.use(productRoutes);
 app.use(chatGptRoutes);
+app.use(quotationRoutes);
 
 const runDb = async () => {
     try {

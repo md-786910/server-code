@@ -24,13 +24,9 @@ const cartSchema = new mongoose.Schema(
         },
         qty: {
             type: Number,
+            default: 0,
             required: true,
-
         },
-        cart: {
-            type: Array,
-            required: false,
-        }
     },
     {
         timestamps: true
