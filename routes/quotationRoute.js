@@ -23,12 +23,13 @@ cloudinary.config({
 
 // console.log(fs.readFileSync(pdf1, "utf8").toLocaleString());
 
-router.get("/getQuotation", async (req, res) => {
+router.get("/getQuotation", async (req, res,next) => {
     try {
         let htmlContent = "<html><body><h1>Hello World</h1></body></html>";
+        
         pdf.create(htmlContent).toFile('./output.pdf', function (err, res) {
-            if (err) return res.status(404).json({ data: "error to create pdf file", success: false });
-            console.log(res);
+            if (err) res.status(404).json({ data: "error to create pdf file", success: false });
+            next();
         });
 
 
