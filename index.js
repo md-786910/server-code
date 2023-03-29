@@ -15,8 +15,9 @@ const productRoutes = require("./routes/productRoute")
 const chatGptRoutes = require("./routes/chatGpt")
 const quotationRoutes = require("./routes/quotationRoute")
 const corsOptions = {
-    origin: "https://flightdata-client-side-website.vercel.app", //included origin as true
+    origin: "*", //included origin as true
     credentials: true, //included credentials as true
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
 };
 
 // middleware
@@ -34,7 +35,9 @@ app.use(quotationRoutes);
 
 const runDb = async () => {
     try {
-        const DB = process.env.DB_URI;
+        const DB = process.env.NODE_ENV === 'production' ? process.env.DB_URI : process.env.DB_URI_LOCAL;
+
+
         mongoose.set("strictQuery", false);
         await mongoose.connect(DB, { useUnifiedTopology: false });
         consola.success("connected to MongoDB");
