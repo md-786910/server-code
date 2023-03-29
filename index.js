@@ -15,8 +15,9 @@ const productRoutes = require("./routes/productRoute")
 const chatGptRoutes = require("./routes/chatGpt")
 const quotationRoutes = require("./routes/quotationRoute")
 const corsOptions = {
-    origin: "https://flightdata-client-side-website.vercel.app", //included origin as true
+    origin: "*", //included origin as true
     credentials: true, //included credentials as true
+     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
 };
 
 // middleware
