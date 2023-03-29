@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const product = require("../model/product");
-const cloudinary = require('cloudinary').v2;
 const cart = require("../model/cart");
+const cloudinary = require('cloudinary').v2;
 const CLOUD_NAME = process.env.CLOUD_NAME
 const API_KEY = process.env.API_KEY
 const API_SECRET = process.env.API_SECRET
@@ -40,9 +40,6 @@ router.post("/addProduct", async (req, res) => {
         })
         await instanceObj.save();
         res.status(201).json({ message: "uploaded successfully!", success: true });
-
-
-
     } catch (error) {
         console.log(error);
         res.status(404).json({ message: "uploading error!" });

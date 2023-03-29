@@ -2,7 +2,12 @@ const mongoose = require("mongoose");
 
 const quotationSchema = new mongoose.Schema(
     {
-        link: {
+        title: {
+            type: String,
+            required: false,
+            default: ""
+        },
+        cloudinaryUrl: {
             type: String,
             required: false
         },
