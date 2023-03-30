@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
-
+let count = 1;
 const quotationSchema = new mongoose.Schema(
     {
-        title: {
-            type: String,
+        serial: {
+            type: Number,
             required: false,
-            default: ""
+            default: count++
         },
         cloudinaryUrl: {
             type: String,
