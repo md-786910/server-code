@@ -93,6 +93,14 @@ router.get('/jsontopdf', async (req, res) => {
         const options = { format: 'Letter' };
 
         // Generate the PDF
+        pdf.create(hbsData).toFile('./public/pdf/cart.pdf', (err, result) => {
+            if (err) {
+                console.log(err);
+                res.status(500).json({ data: "Error generating PDF", success: false });
+                return;
+            }
+        })
+
         pdf.create(hbsData, options).toStream((err, stream) => {
             if (err) return res.send(err);
             res.setHeader('Content-Type', 'application/pdf');
