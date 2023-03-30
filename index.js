@@ -5,9 +5,15 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const port = process.env.PORT || 5000;
 const fileUpload = require("express-fileupload");
+const path = require("path");
 const app = express();
-
 // How to Train an AI Chatbot With Custom large Knowledge Base in pdf format about NFT Using ChatGPT API using node js
+
+// server static file
+const publicPath = path.join(__dirname, './public');
+app.use(express.static(publicPath));
+
+app.set("view engine", "ejs")
 
 // config dotenv
 dotenv.config({});
@@ -19,6 +25,8 @@ const corsOptions = {
     credentials: true, //included credentials as true
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
 };
+
+
 
 // middleware
 app.use(express.json());
