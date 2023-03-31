@@ -32,15 +32,15 @@ router.get('/generate-pdf', (req, res) => {
     const htmlContent = '<h1>Hello, World!</h1>';
 
     // generate pdf from html
-    pdf.create(htmlContent).toFile('./public/pdf/output.pdf', (err, result) => {
+    pdf.create(htmlContent).toFile('public/pdf/output.pdf', (err, result) => {
         if (err) {
             console.log(err);
-            res.status(500).json({ data: "Error generating PDF", success: false });
+            res.status(500).json({ data: "Error generating PDF ", success: false });
             return;
         }
 
         // upload pdf to cloudinary
-        cloudinary.uploader.upload('./public/pdf/output.pdf', { resource_type: 'raw' }, async (error, result) => {
+        cloudinary.uploader.upload('public/pdf/output.pdf', { resource_type: 'raw' }, async (error, result) => {
             if (error) {
                 console.log(error);
                 res.status(500).json({ data: "Error uploading PDF", success: false });
@@ -66,13 +66,12 @@ router.get('/generate-pdf', (req, res) => {
 
 router.get("/getQuotation", async (req, res, next) => {
     try {
-        const saveData = await quotation.find({});
+        const saveData = await quotation.find({}).sort({ _id: -1 });
         res.status(200).json({ data: saveData, success: true })
 
     } catch (error) {
         res.status(404).json({ data: error, success: false })
     }
-
 })
 
 
@@ -84,6 +83,7 @@ router.get('/jsontopdf', async (req, res) => {
         const data = {
             users: users
         }
+
         const filePathName = path.resolve(__dirname, '../views/pdf1.ejs');
         const htmlString = fs.readFileSync(filePathName).toString();
 
