@@ -35,7 +35,7 @@ router.get('/generate-pdf', (req, res) => {
     pdf.create(htmlContent).toFile('public/pdf/output.pdf', (err, result) => {
         if (err) {
             console.log(err);
-            res.status(500).json({ data: "Error generating PDF ", success: false });
+           res.status(500).json({ data: "Error generating PDF from createPdf", success: false });
             return;
         }
 
@@ -43,7 +43,7 @@ router.get('/generate-pdf', (req, res) => {
         cloudinary.uploader.upload('public/pdf/output.pdf', { resource_type: 'raw' }, async (error, result) => {
             if (error) {
                 console.log(error);
-                res.status(500).json({ data: "Error uploading PDF", success: false });
+              res.status(500).json({ data: "Error uploading PDF from cloudinary", success: false });
                 return;
             }
 
@@ -96,7 +96,7 @@ router.get('/jsontopdf', async (req, res) => {
         pdf.create(hbsData).toFile('public/pdf/cart.pdf', (err, result) => {
             if (err) {
                 console.log(err);
-                res.status(500).json({ data: "Error generating PDF", success: false });
+                  res.status(500).json({ data: "Error generating PDF from cart", success: false });
                 return;
             }
         })
