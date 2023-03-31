@@ -25,13 +25,20 @@ const corsOptions = {
     credentials: true, //included credentials as true
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
 };
-
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
+    next();
+});
 
 
 // middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors(corsOptions));
+
+
+
+
 app.use(fileUpload({
     useTempFiles: true,
 }))
@@ -44,7 +51,6 @@ app.use(quotationRoutes);
 const runDb = async () => {
     try {
         const DB = process.env.NODE_ENV === 'production' ? process.env.DB_URI : process.env.DB_URI_LOCAL;
-
 
         mongoose.set("strictQuery", false);
         await mongoose.connect(DB, { useUnifiedTopology: false });

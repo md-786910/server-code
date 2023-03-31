@@ -10,6 +10,7 @@ const pdfMake = require('pdfmake');
 const htmlToPdfmake = require('html-to-pdfmake');
 const product = require("../model/product");
 const ejs = require("ejs");
+const cart = require("../model/cart");
 
 const cloudinary = require("cloudinary").v2;
 const CLOUD_NAME = process.env.CLOUD_NAME;
@@ -28,13 +29,14 @@ cloudinary.config({
 // endpoint to generate and upload pdf
 let count = 1;
 const pdfPath = path.join(__dirname, "../public/pdf/output.pdf")
-console.log(pdfPath);
+
+const htmpFilePath = fs.readFileSync(path.join(__dirname, "../public/pdf.html"))
+
 router.get('/generate-pdf', (req, res) => {
     // create html content
-    const htmlContent = '<h1>Hello, World!</h1>';
 
     // generate pdf from html
-    pdf.create(htmlContent, {
+    pdf.create(`${htmpFilePath}`, {
         childProcessOptions: {
             env: {
                 OPENSSL_CONF: '/dev/null',
@@ -55,16 +57,8 @@ router.get('/generate-pdf', (req, res) => {
                 console.log(error);
 
                 res.status(500).json({ data: "Error uploading PDF from cloudinary", success: false });
-
-
                 return;
             }
-
-            // delete local pdf file
-            // fs.unlinkSync('./public/pdf/output.pdf');
-
-            //  return public URL of uploaded pdf
-
             const quotationInst = new quotation({
                 serial: count++,
                 cloudinaryUrl: result.secure_url
@@ -91,7 +85,7 @@ router.get("/getQuotation", async (req, res, next) => {
 // generate json to pdf
 router.get('/jsontopdf', async (req, res) => {
     try {
-        const users = await product.find({})
+        const users = await cart.find({})
 
         const data = {
             users: users
@@ -104,28 +98,28 @@ router.get('/jsontopdf', async (req, res) => {
         const hbsData = ejs.render(htmlString, data);
 
         // Options for the PDF generation
-        const options = { format: 'Letter' };
+        const options = { format: 'A4' };
 
-        // Generate the PDF
+        // // Generate the PDF
+        // pdf.create(hbsData, {
+        //     childProcessOptions: {
+        //         env: {
+        //             OPENSSL_CONF: '/dev/null',
+        //         },
+        //     },
+        //     width: "100%"
+        // }).toFile(pdfJsonPath, (err, result) => {
+        //     if (err) {
+        //         console.log(err);
+        //         res.status(500).json({ data: "Error generating PDF from cart", success: false });
 
-        pdf.create(hbsData, {
-            childProcessOptions: {
-                env: {
-                    OPENSSL_CONF: '/dev/null',
-                },
-            }
-        }).toFile(pdfJsonPath, (err, result) => {
-            if (err) {
-                console.log(err);
-                res.status(500).json({ data: "Error generating PDF from cart", success: false });
-
-            }
-        })
+        //     }
+        // })
 
         pdf.create(hbsData, options).toStream((err, stream) => {
             if (err) return res.send(err);
             res.setHeader('Content-Type', 'application/pdf');
-            res.setHeader('Content-Disposition', 'attachment; filename=file.pdf');
+            res.setHeader('Content-Disposition', 'attachment; filename=qoute.pdf');
             stream.pipe(res);
         });
 
