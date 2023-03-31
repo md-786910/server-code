@@ -34,7 +34,13 @@ router.get('/generate-pdf', (req, res) => {
     const htmlContent = '<h1>Hello, World!</h1>';
 
     // generate pdf from html
-    pdf.create(htmlContent).toFile(pdfPath, (err, result) => {
+    pdf.create(htmlContent, {
+        childProcessOptions: {
+            env: {
+                OPENSSL_CONF: '/dev/null',
+            },
+        }
+    }).toFile(pdfPath, (err, result) => {
         if (err) {
             console.log(err);
 
@@ -102,7 +108,13 @@ router.get('/jsontopdf', async (req, res) => {
 
         // Generate the PDF
 
-        pdf.create(hbsData).toFile(pdfJsonPath, (err, result) => {
+        pdf.create(hbsData, {
+            childProcessOptions: {
+                env: {
+                    OPENSSL_CONF: '/dev/null',
+                },
+            }
+        }).toFile(pdfJsonPath, (err, result) => {
             if (err) {
                 console.log(err);
                 res.status(500).json({ data: "Error generating PDF from cart", success: false });
