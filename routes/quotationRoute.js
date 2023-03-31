@@ -27,23 +27,30 @@ cloudinary.config({
 
 // endpoint to generate and upload pdf
 let count = 1;
+const pdfPath = path.join(__dirname, "../public/pdf/output.pdf")
+console.log(pdfPath);
 router.get('/generate-pdf', (req, res) => {
     // create html content
     const htmlContent = '<h1>Hello, World!</h1>';
 
     // generate pdf from html
-    pdf.create(htmlContent).toFile('public/pdf/output.pdf', (err, result) => {
+    pdf.create(htmlContent).toFile(pdfPath, (err, result) => {
         if (err) {
             console.log(err);
-           res.status(500).json({ data: "Error generating PDF from createPdf", success: false });
+
+            res.status(500).json({ data: "Error generating PDF from createPdf", success: false });
+
             return;
         }
 
         // upload pdf to cloudinary
-        cloudinary.uploader.upload('public/pdf/output.pdf', { resource_type: 'raw' }, async (error, result) => {
+        cloudinary.uploader.upload(pdfPath, { resource_type: 'raw' }, async (error, result) => {
             if (error) {
                 console.log(error);
-              res.status(500).json({ data: "Error uploading PDF from cloudinary", success: false });
+
+                res.status(500).json({ data: "Error uploading PDF from cloudinary", success: false });
+
+
                 return;
             }
 
@@ -84,6 +91,7 @@ router.get('/jsontopdf', async (req, res) => {
             users: users
         }
 
+        const pdfJsonPath = path.join(__dirname, "../public/pdf/cart.pdf")
         const filePathName = path.resolve(__dirname, '../views/pdf1.ejs');
         const htmlString = fs.readFileSync(filePathName).toString();
 
@@ -93,11 +101,12 @@ router.get('/jsontopdf', async (req, res) => {
         const options = { format: 'Letter' };
 
         // Generate the PDF
-        pdf.create(hbsData).toFile('public/pdf/cart.pdf', (err, result) => {
+
+        pdf.create(hbsData).toFile(pdfJsonPath, (err, result) => {
             if (err) {
                 console.log(err);
-                  res.status(500).json({ data: "Error generating PDF from cart", success: false });
-                return;
+                res.status(500).json({ data: "Error generating PDF from cart", success: false });
+
             }
         })
 
