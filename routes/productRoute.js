@@ -121,9 +121,14 @@ async function getProductExist(products) {
     products?.map(async (d, index) => {
         const findProd = await product.find({ productName: d.product })
         if (findProd !== null && findProd.length > 0) {
-            prodArr.push(findProd[0]);
+            prodArr.push({
+                productName: findProd[0].productName,
+                price: findProd[0].price,
+                qty: d.quantity
+            });
         }
     })
+
     return prodArr;
 }
 
@@ -131,9 +136,16 @@ router.post("/getProductPresent", async (req, res) => {
     try {
         const { products } = req.body
         const prodArr = await getProductExist(products);
-
+        let price = 0;
+        let qty = 0;
         setTimeout(() => {
-            res.status(200).json({ data: prodArr, success: true })
+            prodArr.forEach((item) => {
+                price += parseInt(item.price * item.qty)
+            })
+            prodArr.forEach((item) => {
+                qty += parseInt(item.qty)
+            })
+            res.status(200).json({ data: prodArr, price: price, qty: qty, success: true })
         }, 1000)
     } catch (error) {
         res.status(404).json({ message: "product error!", success: false });
