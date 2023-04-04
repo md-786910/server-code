@@ -114,9 +114,10 @@ router.get("/getCart", async (req, res) => {
     }
 })
 
-const prodArr = [];
+
 
 async function getProductExist(products) {
+    const prodArr = [];
     products?.map(async (d, index) => {
         const findProd = await product.find({ productName: d.product })
         if (findProd !== null && findProd.length > 0) {
