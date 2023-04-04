@@ -115,21 +115,22 @@ router.get("/getCart", async (req, res) => {
 })
 
 
-
 async function getProductExist(products) {
-    const prodArr = [];
+
+    let prodArr = [];
     products?.map(async (d, index) => {
         const findProd = await product.find({ productName: d.product })
         if (findProd !== null && findProd.length > 0) {
             prodArr.push(findProd[0]);
         }
     })
+    return prodArr;
 }
 
 router.post("/getProductPresent", async (req, res) => {
     try {
         const { products } = req.body
-        getProductExist(products);
+        const prodArr = await getProductExist(products);
 
         setTimeout(() => {
             res.status(200).json({ data: prodArr, success: true })
