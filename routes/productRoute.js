@@ -114,6 +114,31 @@ router.get("/getCart", async (req, res) => {
     }
 })
 
+const prodArr = [];
+
+async function getProductExist(products) {
+    products?.map(async (d, index) => {
+        const findProd = await product.find({ productName: d.product })
+        if (findProd !== null && findProd.length > 0) {
+            prodArr.push(findProd[0]);
+        }
+    })
+}
+
+router.post("/getProductPresent", async (req, res) => {
+    try {
+        const { products } = req.body
+        getProductExist(products);
+
+        setTimeout(() => {
+            res.status(200).json({ data: prodArr, success: true })
+        }, 1000)
+    } catch (error) {
+        res.status(404).json({ message: "product error!", success: false });
+
+    }
+})
+
 
 router.post("/deleteCart", async (req, res) => {
     try {

@@ -83,50 +83,109 @@ router.get("/getQuotation", async (req, res, next) => {
 
 
 // generate json to pdf
-router.get('/jsontopdf', async (req, res) => {
-    try {
-        const users = await cart.find({})
+// router.get('/jsontopdf', async (req, res) => {
+//     try {
+//         const users = await cart.find({})
 
-        const data = {
-            users: users
-        }
+//         const data = {
+//             users: users
+//         }
 
-        const pdfJsonPath = path.join(__dirname, "../public/pdf/cart.pdf")
-        const filePathName = path.resolve(__dirname, '../views/pdf1.ejs');
-        const htmlString = fs.readFileSync(filePathName).toString();
+//         const pdfJsonPath = path.join(__dirname, "../public/pdf/cart.pdf")
+//         const filePathName = path.resolve(__dirname, '../views/pdf1.ejs');
+//         const htmlString = fs.readFileSync(filePathName).toString();
 
-        const hbsData = ejs.render(htmlString, data);
+//         const hbsData = ejs.render(htmlString, data);
 
-        // Options for the PDF generation
-        const options = { format: 'A4' };
+//         // Options for the PDF generation
+//         const options = { format: 'A4' };
 
-        // // Generate the PDF
-        // pdf.create(hbsData, {
-        //     childProcessOptions: {
-        //         env: {
-        //             OPENSSL_CONF: '/dev/null',
-        //         },
-        //     },
-        //     width: "100%"
-        // }).toFile(pdfJsonPath, (err, result) => {
-        //     if (err) {
-        //         console.log(err);
-        //         res.status(500).json({ data: "Error generating PDF from cart", success: false });
+//         // // Generate the PDF
+//         // pdf.create(hbsData, {
+//         //     childProcessOptions: {
+//         //         env: {
+//         //             OPENSSL_CONF: '/dev/null',
+//         //         },
+//         //     },
+//         //     width: "100%"
+//         // }).toFile(pdfJsonPath, (err, result) => {
+//         //     if (err) {
+//         //         console.log(err);
+//         //         res.status(500).json({ data: "Error generating PDF from cart", success: false });
 
-        //     }
-        // })
+//         //     }
+//         // })
 
-        pdf.create(hbsData, options).toStream((err, stream) => {
-            if (err) return res.send(err);
-            res.setHeader('Content-Type', 'application/pdf');
-            res.setHeader('Content-Disposition', 'attachment; filename=qoute.pdf');
-            stream.pipe(res);
-        });
+//         pdf.create(hbsData, options).toStream((err, stream) => {
+//             if (err) return res.send(err);
+//             res.setHeader('Content-Type', 'application/pdf');
+//             res.setHeader('Content-Disposition', 'attachment; filename=qoute.pdf');
+//             stream.pipe(res);
+//         });
 
-    } catch (error) {
-        res.status(500).json({ data: error, success: false })
+//     } catch (error) {
+//         res.status(500).json({ data: error, success: false })
+//     }
+// });
+
+
+router.get('/jsontopdf-1', async (req, res) => {
+    const carts = await cart.find({})
+
+    const doc = new PDFDocument();
+
+    const table = {
+        headers: ['Product Name', 'Qty', 'Price'],
+        rows: carts?.map(item => {
+            return [item.productName, item.qty, '₹' + item.price.toLocaleString('en-IN')]
+        }),
+        total: '₹' + carts?.reduce((total, item) => total + item.price * item.qty, 0).toLocaleString('en-IN')
     }
+
+
+    // Add the table headers
+    doc.font('Helvetica-Bold');
+    doc.fontSize(12);
+    table.headers.forEach((header, i) => {
+        doc.text(header, 50 + i * 150, 150);
+    });
+
+    // Add the table rows
+    doc.font('Helvetica');
+    doc.fontSize(10);
+    table.rows.forEach((row, i) => {
+        row.forEach((cell, j) => {
+            doc.text(cell, 50 + j * 150, 180 + i * 30);
+        });
+    });
+
+    // Add the total price
+    doc.font('Helvetica-Bold');
+    doc.fontSize(12);
+    doc.text('Total:', 50, 180 + table.rows.length * 30);
+    doc.text(table.total, 200, 180 + table.rows.length * 30);
+
+    doc.pipe(fs.createWriteStream(pdfPath));
+    doc.end();
+
+    // upload pdf to cloudinary
+    cloudinary.uploader.upload(pdfPath, { resource_type: 'raw' }, async (error, result) => {
+        if (error) {
+            console.log(error);
+
+            res.status(500).json({ data: "Error uploading PDF from cloudinary", success: false });
+            return;
+        }
+        const quotationInst = new quotation({
+            serial: count++,
+            cloudinaryUrl: result.secure_url
+        })
+        const saveData = await quotationInst.save()
+        res.status(201).json({ data: saveData, success: true })
+
+    });
 });
+
 
 
 
